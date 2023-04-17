@@ -82,7 +82,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         final Placemark placemark = placemarks.first;
                         setState(() {
                           address =
-                          "${placemark.locality}, ${placemark.country}";
+                          "${placemark.subLocality},${placemark.locality}, ${placemark.country}";
                         });
                       } else {
                         setState(() {
@@ -90,7 +90,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         });
                       }
                     },
-                      center: LatLng(point.latitude, point.longitude), zoom: 10),
+                      center: LatLng(point.latitude, point.longitude), zoom: 15),
                   children: [
                     TileLayer(
                       urlTemplate:
@@ -121,7 +121,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   textAlign: TextAlign.center,
                   ))
                 ),
-          Padding(
+          allowLocation == true?Padding(
             padding: const EdgeInsets.symmetric(vertical: 34, horizontal: 16),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -144,7 +144,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 )
               ],
             ),
-          ),
+          ):Container(),
 
         ],
       ),
