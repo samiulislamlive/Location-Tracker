@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:positioned_tap_detector_2/positioned_tap_detector_2.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({Key? key}) : super(key: key);
@@ -17,6 +17,7 @@ bool allowLocation = false;
 bool locationAllowed = false;
 class _MyHomePageState extends State<MyHomePage> {
   LatLng point = LatLng(23.774475, 90.415871);
+  String address = "";
 
   _handleLocationPermission() async {
     bool serviceEnabled = false;
@@ -70,13 +71,26 @@ class _MyHomePageState extends State<MyHomePage> {
           allowLocation == true
               ? FlutterMap(
                   options: MapOptions(
-                    onTap: (q,latLng){
+                    onTap: (q,latLng) async{
                       setState(() {
                         point = latLng;
-                        print("This is location ${latLng}");
                       });
+                      final List<Placemark> placemarks =
+                      await placemarkFromCoordinates(
+                          latLng.latitude, latLng.longitude);
+                      if (placemarks.isNotEmpty) {
+                        final Placemark placemark = placemarks.first;
+                        setState(() {
+                          address =
+                          "${placemark.locality}, ${placemark.country}";
+                        });
+                      } else {
+                        setState(() {
+                          address = "";
+                        });
+                      }
                     },
-                      center: LatLng(lat, long), zoom: 10),
+                      center: LatLng(point.latitude, point.longitude), zoom: 10),
                   children: [
                     TileLayer(
                       urlTemplate:
@@ -107,6 +121,31 @@ class _MyHomePageState extends State<MyHomePage> {
                   textAlign: TextAlign.center,
                   ))
                 ),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 34, horizontal: 16),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Card(child: TextField(
+                  decoration: InputDecoration(
+                    prefixIcon: Icon(Icons.location_on_outlined),
+                    hintText: "Search for location",
+                    contentPadding: EdgeInsets.all(16)
+                  ),
+                )),
+                Card(
+                  child: Padding(padding: EdgeInsets.all(16),
+                    child: Text(address,
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold
+                    ),
+                    ),
+                  ),
+                )
+              ],
+            ),
+          ),
+
         ],
       ),
     );
