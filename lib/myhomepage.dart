@@ -83,8 +83,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         setState(() {
                           address =
                           "${placemark.subLocality},${placemark.locality}, ${placemark.country}";
-
-
+                          
                         });
                       } else {
                         setState(() {
