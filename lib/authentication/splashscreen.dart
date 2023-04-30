@@ -3,6 +3,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:location_ninja/authentication/login_page.dart';
 import 'package:location_ninja/common/normal_constants.dart';
 import 'package:location_ninja/main.dart';
@@ -15,6 +16,22 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
+
+  getUserData() async{
+    LocationPermission permission;
+    permission = await Geolocator.checkPermission();
+    if(permission == LocationPermission.deniedForever){
+      permission = await Geolocator.requestPermission();
+    }
+    if(permission == LocationPermission.denied){
+      permission = await Geolocator.requestPermission();
+    }
+    if(permission == LocationPermission.always || permission == LocationPermission.whileInUse){
+      Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+      NormalConstants.latitude =  position.longitude.toString();
+      NormalConstants.longitude = position.longitude.toString();
+    }
+  }
 
   navigateTo() async {
     Timer(const Duration(milliseconds: 2000), () {
@@ -33,6 +50,7 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    getUserData();
     navigateTo();
   }
 
