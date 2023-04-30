@@ -17,20 +17,41 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen> {
 
-  getUserData() async{
+  _handleLocationPermission() async {
+    bool serviceEnabled = false;
     LocationPermission permission;
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(
+            'Give permission',
+            textAlign: TextAlign.center,
+          )));
+    }
     permission = await Geolocator.checkPermission();
-    if(permission == LocationPermission.deniedForever){
+    if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text(
+              'To use KothaDialer Location Permission is required.',
+              textAlign: TextAlign.center,
+            )));
+      }
     }
-    if(permission == LocationPermission.denied){
-      permission = await Geolocator.requestPermission();
+    if (permission == LocationPermission.deniedForever) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(
+            'To use KothaDialer required Location Permissions that are permanently denied.',
+            textAlign: TextAlign.center,
+          )));
     }
-    if(permission == LocationPermission.always || permission == LocationPermission.whileInUse){
-      Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-      NormalConstants.latitude =  position.longitude.toString();
-      NormalConstants.longitude = position.longitude.toString();
-    }
+    Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
+    NormalConstants.latitude = position.latitude;
+    NormalConstants.longitude = position.longitude;
+    print("lat from splash ${NormalConstants.latitude}");
+    print("long from splash ${NormalConstants.longitude}");
   }
 
   navigateTo() async {
@@ -50,7 +71,7 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    getUserData();
+    _handleLocationPermission();
     navigateTo();
   }
 

@@ -13,16 +13,15 @@ class MyHomePage extends StatefulWidget {
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
-var lat;
-var long;
 bool allowLocation = false;
 bool locationAllowed = false;
-
 class _MyHomePageState extends State<MyHomePage> {
   String address = "";
 
   double? touchLat;
   double? touchLong;
+
+  MapController _mapController = MapController();
 
   getExactPosition(double lat, double long,LatLng position) async{
     List<Placemark> placemarks =
@@ -166,11 +165,20 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    print("lat from main ${NormalConstants.latitude}");
+    print("long from main ${NormalConstants.longitude}");
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Stack(
         children: [
           FlutterMap(
+            mapController: _mapController,
             options: MapOptions(
               onTap: (q,latlng) async{
                 setState(() {
@@ -199,8 +207,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 //     });
                 //   }
                 // },
-                center: LatLng(double.parse(NormalConstants.latitude),
-                    double.parse(NormalConstants.longitude)),
+                center: LatLng(NormalConstants.latitude,NormalConstants.longitude),
                 zoom: 15),
             children: [
               TileLayer(
@@ -213,8 +220,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   Marker(
                       width: 200,
                       height: 200,
-                      point: LatLng(double.parse(NormalConstants.latitude),
-                          double.parse(NormalConstants.longitude)),
+                      point: LatLng(NormalConstants.latitude,NormalConstants.longitude),
                       builder: (ctx) => Icon(
                             Icons.location_on,
                             color: Colors.red,
@@ -252,7 +258,50 @@ class _MyHomePageState extends State<MyHomePage> {
           //         ),
           //       )
           //     : Container(),
-
+          Align(
+            alignment: Alignment(0.9, 0.7),
+            child: CircleAvatar(
+              radius: mq.height * 0.04,
+              child: IconButton(
+                onPressed: () {
+                  _mapController.move(_mapController.center, _mapController.zoom + 1);
+                },
+                icon: Icon(Icons.zoom_in,
+                  size:  mq.height * 0.05,
+                ),
+              ),
+            ),
+          ),
+          Align(
+            alignment: Alignment(0.9, 0.9),
+            child: CircleAvatar(
+              radius: mq.height * 0.04,
+              child: IconButton(
+                onPressed: () {
+                  _mapController.move(_mapController.center, _mapController.zoom - 1);
+                },
+                icon: Icon(Icons.zoom_out_sharp,
+                  size:  mq.height * 0.05,
+                ),
+              ),
+            ),
+          ),
+          Align(
+            alignment: Alignment(0.9, -0.9),
+            child: CircleAvatar(
+              radius: mq.height * 0.04,
+              child: IconButton(
+                onPressed: () {
+                  setState(() {
+                    _mapController.move(LatLng(NormalConstants.latitude, NormalConstants.longitude), 15);
+                  });
+                },
+                icon: Icon(Icons.restart_alt,
+                  size:  mq.height * 0.05,
+                ),
+              ),
+            ),
+          ),
         ],
       ),
     );

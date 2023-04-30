@@ -52,15 +52,10 @@ class _LoginPageState extends State<LoginPage> {
     }
     Position position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high);
-    setState(() {
-      locationAllowed = true;
-      var latitude = position.latitude.toString();
-      var longitude = position.longitude.toString();
-      NormalConstants.latitude = position.latitude.toString();
-      NormalConstants.longitude = position.longitude.toString();
-      print("This is latitude ${NormalConstants.latitude}");
-      print("This is longitude ${NormalConstants.longitude}");
-    });
+    NormalConstants.latitude = position.latitude;
+    NormalConstants.longitude = position.longitude;
+    print("lat from splash ${NormalConstants.latitude}");
+    print("long from splash ${NormalConstants.longitude}");
   }
 
   bool checkRegister(){
