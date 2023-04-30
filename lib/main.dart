@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:location_ninja/myhomepage.dart';
+import 'package:location_ninja/authentication/splashscreen.dart';
 
 void main() {
   runApp(const MyApp());
 }
+
+//initializing for mediaquery
+late Size mq;
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -16,7 +19,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const MyHomePage(),
+      home: SplashScreen(),
     );
   }
 }

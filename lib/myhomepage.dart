@@ -3,6 +3,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:location_ninja/common/normal_constants.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({Key? key}) : super(key: key);
@@ -16,52 +17,9 @@ var long;
 bool allowLocation = false;
 bool locationAllowed = false;
 class _MyHomePageState extends State<MyHomePage> {
-  LatLng point = LatLng(23.774475, 90.415871);
   String address = "";
 
-  _handleLocationPermission() async {
-    bool serviceEnabled = false;
-    LocationPermission permission;
-    serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(
-        'Give permission',
-        textAlign: TextAlign.center,
-      )));
-    }
-    permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text(
-          'To use KothaDialer Location Permission is required.',
-          textAlign: TextAlign.center,
-        )));
-      }
-    }
-    if (permission == LocationPermission.deniedForever) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(
-        'To use KothaDialer required Location Permissions that are permanently denied.',
-        textAlign: TextAlign.center,
-      )));
-    }
-    Position position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high);
-      setState(() {
-        locationAllowed = true;
-        point = LatLng(position.latitude, position.longitude);
-      });
-  }
 
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    _handleLocationPermission();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -71,27 +29,27 @@ class _MyHomePageState extends State<MyHomePage> {
           allowLocation == true
               ? FlutterMap(
                   options: MapOptions(
-                    onTap: (q,latLng) async{
-                      setState(() {
-                        point = latLng;
-                      });
-                      final List<Placemark> placemarks =
-                      await placemarkFromCoordinates(
-                          latLng.latitude, latLng.longitude);
-                      if (placemarks.isNotEmpty) {
-                        final Placemark placemark = placemarks.first;
-                        setState(() {
-                          address =
-                          "${placemark.subLocality},${placemark.locality}, ${placemark.country}";
-                          
-                        });
-                      } else {
-                        setState(() {
-                          address = "";
-                        });
-                      }
-                    },
-                      center: LatLng(point.latitude, point.longitude), zoom: 15),
+                    // onTap: (q,latLng) async{
+                    //   setState(() {
+                    //     point = latLng;
+                    //   });
+                    //   final List<Placemark> placemarks =
+                    //   await placemarkFromCoordinates(
+                    //       latLng.latitude, latLng.longitude);
+                    //   if (placemarks.isNotEmpty) {
+                    //     final Placemark placemark = placemarks.first;
+                    //     setState(() {
+                    //       address =
+                    //       "${placemark.subLocality},${placemark.locality}, ${placemark.country}";
+                    //
+                    //     });
+                    //   } else {
+                    //     setState(() {
+                    //       address = "";
+                    //     });
+                    //   }
+                    // },
+                      center: LatLng(double.parse(NormalConstants.latitude),  double.parse(NormalConstants.longitude)), zoom: 15),
                   children: [
                     TileLayer(
                       urlTemplate:
@@ -103,7 +61,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         Marker(
                             width: 200,
                             height: 200,
-                            point: LatLng(point.latitude, point.longitude),
+                            point: LatLng(double.parse(NormalConstants.latitude), double.parse(NormalConstants.longitude)),
                             builder: (ctx) => Icon(
                                   Icons.location_on,
                                   color: Colors.red,
